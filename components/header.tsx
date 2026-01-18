@@ -68,7 +68,7 @@ export function Header() {
             <Button variant="ghost" size="icon" className="hidden md:flex">
               <Search className="h-5 w-5" />
             </Button>
-            <Link href="/admin" title="لوحة التحكم">
+            <Link href="/admin-dashboard" title="لوحة التحكم">
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
                 <Lock className="h-5 w-5" />
               </Button>
@@ -106,7 +106,7 @@ export function Header() {
                 </Link>
               ))}
               <Link
-                href="/admin"
+                href="/admin-dashboard"
                 className="text-foreground hover:text-primary transition-colors font-medium py-2 flex items-center gap-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
