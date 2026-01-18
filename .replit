@@ -37,3 +37,9 @@ externalPort = 80
 deploymentTarget = "autoscale"
 run = ["pnpm", "start", "-H", "0.0.0.0", "-p", "5000"]
 build = ["pnpm", "build"]
+
+[userenv]
+
+[userenv.shared]
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_1aqJIr4BcAWTxL-00WTDaw_4kzX1ZKd"
+NEXT_PUBLIC_SUPABASE_URL = "https://qkekxxhipsmsiytsnkow.supabase.co"
