@@ -5,7 +5,7 @@ export interface Product {
   description?: string
   descriptionAr?: string
   price: number
-  originalPrice?: number
+  original_price?: number
   image: string
   category: string
   categoryAr: string

@@ -54,7 +54,6 @@ export default async function AdminDashboard() {
                 <p className="text-muted-foreground text-sm">عرض وتعديل كافة المنتجات في المتجر</p>
               </div>
             </div>
-            <SyncButton />
           </div>
 
           <ProductsTable initialProducts={products} />

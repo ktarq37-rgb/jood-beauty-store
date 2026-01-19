@@ -14,7 +14,6 @@ export async function syncShopifyProducts() {
     const existingIds = new Set(existingProducts?.map(p => p.external_id) || [])
 
     const productsToInsert = shopifyProducts
-      .filter((p: any) => !existingIds.has(p.id.toString()))
       .map((p: any) => {
         const title = p.title.toLowerCase();
         let category = "other";
@@ -50,7 +49,7 @@ export async function syncShopifyProducts() {
           name_ar: p.title,
           description_en: p.body_html,
           description_ar: p.body_html,
-          price: parseFloat(p.variants[0]?.price || "0") * 1000,
+          price: parseFloat(p.variants[0]?.price || "0"), // Base price in SDG
           category: category,
           subcategory: subcategory,
           brand: p.vendor,
@@ -58,15 +57,19 @@ export async function syncShopifyProducts() {
           is_on_sale: !!p.variants[0]?.compare_at_price,
           discount_percentage: p.variants[0]?.compare_at_price 
             ? Math.round(((parseFloat(p.variants[0].compare_at_price) - parseFloat(p.variants[0].price)) / parseFloat(p.variants[0].compare_at_price)) * 100)
-            : null
+            : null,
+          updated_at: new Date().toISOString()
         };
       })
 
     if (productsToInsert.length === 0) {
-      return { success: true, count: 0, message: "تمت مزامنة كافة المنتجات مسبقاً" }
+      return { success: true, count: 0, message: "لا توجد منتجات للمزامنة" }
     }
 
-    const { error } = await supabase.from("products").insert(productsToInsert)
+    const { error } = await supabase.from("products").upsert(productsToInsert, {
+      onConflict: "external_id",
+      ignoreDuplicates: false,
+    })
     
     if (error) throw error
     return { success: true, count: productsToInsert.length }
