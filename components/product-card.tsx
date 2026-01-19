@@ -2,14 +2,14 @@
 
 import type React from "react"
 import { useState } from "react"
-import { type Product, formatPrice } from "@/lib/products-data"
+import { formatPrice } from "@/lib/products-data"
 import { useCart } from "@/lib/cart-context"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { Button } from "@/components/ui/button"
 import { ShoppingBag, Eye, X, Minus, Plus } from "lucide-react"
 
 interface ProductCardProps {
-  product: Product
+  product: any
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -27,13 +27,13 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   const discountPercent =
-    product.originalPrice && product.originalPrice > product.price
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    (product.original_price || product.originalPrice) && (product.original_price || product.originalPrice) > product.price
+      ? Math.round((((product.original_price || product.originalPrice) - product.price) / (product.original_price || product.originalPrice)) * 100)
       : 0
 
-  const productName = language === "ar" ? product.nameAr : product.name
-  const categoryName = language === "ar" ? product.categoryAr : product.category
-  const productDescription = language === "ar" ? product.descriptionAr : product.description
+  const productName = language === "ar" ? (product.name_ar || product.nameAr) : (product.name_en || product.name)
+  const categoryName = language === "ar" ? (product.category_ar || product.categoryAr) : (product.category_en || product.category)
+  const productDescription = language === "ar" ? (product.description_ar || product.descriptionAr) : (product.description_en || product.description)
 
   return (
     <>
@@ -44,12 +44,12 @@ export function ProductCard({ product }: ProductCardProps) {
           onClick={() => setShowDetails(true)}
         >
           <img
-            src={product.image || "/placeholder.svg"}
+            src={product.image || product.image_url || "/placeholder.svg"}
             alt={productName}
             className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
           />
 
-          {product.isOnSale && discountPercent > 0 && (
+          {(product.is_on_sale || product.isOnSale) && discountPercent > 0 && (
             <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
               {t("sale")} {discountPercent}%
             </div>
@@ -78,9 +78,9 @@ export function ProductCard({ product }: ProductCardProps) {
               <span className="text-sm font-bold text-secondary leading-tight">
                 {formatPrice(product.price, language)}
               </span>
-              {product.originalPrice && discountPercent > 0 && (
+              {(product.is_on_sale || product.isOnSale) && (product.original_price || product.originalPrice) && discountPercent > 0 && (
                 <span className="text-[10px] text-muted-foreground line-through">
-                  {formatPrice(product.originalPrice, language)}
+                  {formatPrice(product.original_price || product.originalPrice, language)}
                 </span>
               )}
             </div>
@@ -116,7 +116,7 @@ export function ProductCard({ product }: ProductCardProps) {
               {/* Product Image */}
               <div className="aspect-square bg-gradient-to-br from-pink-50 to-pink-100">
                 <img
-                  src={product.image || "/placeholder.svg"}
+                  src={product.image || product.image_url || "/placeholder.svg"}
                   alt={productName}
                   className="w-full h-full object-contain p-8"
                 />
@@ -143,9 +143,9 @@ export function ProductCard({ product }: ProductCardProps) {
                 {/* Price */}
                 <div className="flex items-baseline gap-3">
                   <span className="text-2xl font-bold text-secondary">{formatPrice(product.price, language)}</span>
-                  {product.originalPrice && discountPercent > 0 && (
+                  {(product.is_on_sale || product.isOnSale) && (product.original_price || product.originalPrice) && discountPercent > 0 && (
                     <span className="text-base text-muted-foreground line-through">
-                      {formatPrice(product.originalPrice, language)}
+                      {formatPrice(product.original_price || product.originalPrice, language)}
                     </span>
                   )}
                 </div>
