@@ -1,6 +1,6 @@
 "use client"
 
-import { categories, subcategories } from "@/lib/products-data"
+import { categories, subcategories, products as fallbackProducts } from "@/lib/products-data"
 import { ProductCard } from "./product-card"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -19,8 +19,11 @@ export function ProductsSection() {
         .select("*")
         .order("created_at", { ascending: false })
       
-      if (!error && data) {
+      if (!error && data && data.length > 0) {
         setProducts(data)
+      } else {
+        // Fallback to local products if DB is empty
+        setProducts(fallbackProducts)
       }
       setLoading(false)
     }
