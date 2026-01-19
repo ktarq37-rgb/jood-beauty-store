@@ -1,45 +1,45 @@
 "use client"
 
-import { categories, subcategories, products as fallbackProducts } from "@/lib/products-data"
+import { initialProducts, categories, subcategories } from "@/lib/products-data"
 import { ProductCard } from "./product-card"
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
+import type { Product } from "@/lib/products-data"
 
 export function ProductsSection() {
-  const [products, setProducts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState<Product[]>(initialProducts)
   const [selectedSubcategory, setSelectedSubcategory] = useState<{ [key: string]: string }>({})
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
 
   useEffect(() => {
-    async function loadProducts() {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false })
-      
-      if (!error && data && data.length > 0) {
-        setProducts(data)
+    const loadProducts = () => {
+      const savedProducts = localStorage.getItem("jood_products")
+      if (savedProducts) {
+        try {
+          const parsed = JSON.parse(savedProducts)
+          console.log("[v0] Loaded products from storage:", parsed.length)
+          setProducts(parsed)
+        } catch (e) {
+          console.log("[v0] Error parsing products:", e)
+          setProducts(initialProducts)
+        }
       } else {
-        // Fallback to local products if DB is empty
-        setProducts(fallbackProducts)
+        console.log("[v0] Using initial products:", initialProducts.length)
+        setProducts(initialProducts)
       }
-      setLoading(false)
     }
 
     loadProducts()
+
+    window.addEventListener("storage", loadProducts)
+    window.addEventListener("productsUpdated", loadProducts)
+
+    return () => {
+      window.removeEventListener("storage", loadProducts)
+      window.removeEventListener("productsUpdated", loadProducts)
+    }
   }, [])
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="animate-pulse text-muted-foreground">جاري تحميل المنتجات...</div>
-      </div>
-    )
-  }
-
-  const allBrands = Array.from(new Set(products.map((p) => p.brand))).filter(Boolean).sort()
+  const allBrands = Array.from(new Set(products.map((p) => p.brand))).sort()
 
   return (
     <section id="products-section" className="py-16 scroll-mt-24">
