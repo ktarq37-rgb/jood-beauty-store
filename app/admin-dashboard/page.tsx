@@ -1,13 +1,18 @@
-import { getProductsAction } from "./actions"
+import { getProductsAction, getSettingsAction, getCouponsAction } from "./actions"
 import ProductsTable from "./products-table"
+import SettingsForm from "./settings-form"
+import CouponsManager from "./coupons-manager"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Package, Plus, LayoutDashboard } from "lucide-react"
+import { Package, Plus, LayoutDashboard, Settings, Ticket } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export const dynamic = "force-dynamic"
 
 export default async function AdminDashboard() {
   const products = await getProductsAction()
+  const settings = await getSettingsAction()
+  const coupons = await getCouponsAction()
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -24,21 +29,34 @@ export default async function AdminDashboard() {
       </div>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex flex-col gap-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Package className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold">إدارة المنتجات</h2>
-                <p className="text-muted-foreground text-sm">عرض وتعديل كافة المنتجات في المتجر</p>
-              </div>
-            </div>
-          </div>
+        <Tabs defaultValue="products" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              المنتجات
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              الإعدادات
+            </TabsTrigger>
+            <TabsTrigger value="coupons" className="flex items-center gap-2">
+              <Ticket className="w-4 h-4" />
+              الكوبونات
+            </TabsTrigger>
+          </TabsList>
 
-          <ProductsTable initialProducts={products} />
-        </div>
+          <TabsContent value="products">
+            <ProductsTable initialProducts={products} />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SettingsForm initialSettings={settings} />
+          </TabsContent>
+
+          <TabsContent value="coupons">
+            <CouponsManager initialCoupons={coupons} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   )

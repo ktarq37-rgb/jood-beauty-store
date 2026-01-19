@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { deleteProductAction, upsertProductAction } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
 import {
   Table,
   TableBody,
@@ -20,13 +21,53 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
-import { Edit2, Trash2, Plus, Search } from "lucide-react"
+import { Edit2, Trash2, Plus, Search, Upload, Link as LinkIcon } from "lucide-react"
 
 export default function ProductsTable({ initialProducts }: { initialProducts: any[] }) {
   const [products, setProducts] = useState(initialProducts)
   const [searchTerm, setSearchTerm] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<any>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const supabase = createClient()
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random()}.${fileExt}`
+      const filePath = `product-images/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath)
+
+      // Get the form element to update the image input
+      const form = e.target.closest('form')
+      if (form) {
+        const imageInput = form.querySelector('input[name="image"]') as HTMLInputElement
+        if (imageInput) {
+          imageInput.value = publicUrl
+          // Manually trigger change if needed, though form data will pick it up
+        }
+      }
+      toast.success("تم رفع الصورة بنجاح")
+    } catch (error: any) {
+      toast.error("فشل رفع الصورة: " + error.message)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const filteredProducts = products.filter(p => 
     p.name_ar?.includes(searchTerm) || p.name_en?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -50,7 +91,7 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
     if (!confirm("هل أنت متأكد من الحذف؟")) return
     try {
       await deleteProductAction(id)
-      toast.success("تم الحذف بنجax")
+      toast.success("تم الحذف بنجاح")
       window.location.reload()
     } catch (error: any) {
       toast.error(error.message)
@@ -96,20 +137,39 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
                 <Input name="description_ar" defaultValue={editingProduct?.description_ar} />
               </div>
               <div className="space-y-2 col-span-2">
-                <label className="text-sm font-medium">Price (IQD)</label>
+                <label className="text-sm font-medium">السعر (د.ع)</label>
                 <Input type="number" name="price" defaultValue={editingProduct?.price} required />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Category</label>
+                <label className="text-sm font-medium">الفئة (Category)</label>
                 <Input name="category" defaultValue={editingProduct?.category} required />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Brand</label>
+                <label className="text-sm font-medium">العلامة التجارية (Brand)</label>
                 <Input name="brand" defaultValue={editingProduct?.brand} required />
               </div>
               <div className="space-y-2 col-span-2">
-                <label className="text-sm font-medium">Image URL</label>
-                <Input name="image" defaultValue={editingProduct?.image} required />
+                <label className="text-sm font-medium">الصورة</label>
+                <div className="flex gap-2">
+                  <Input name="image" defaultValue={editingProduct?.image} placeholder="رابط الصورة" required />
+                  <div className="relative">
+                    <input
+                      type="file"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      accept="image/*"
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                    >
+                      {uploading ? "جاري الرفع..." : <Upload className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
               </div>
               <Button type="submit" className="col-span-2 mt-4">حفظ المنتج</Button>
             </form>

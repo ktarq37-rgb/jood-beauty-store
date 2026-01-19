@@ -62,3 +62,31 @@ export async function deleteProductAction(id: string) {
   revalidatePath("/")
   revalidatePath("/admin-dashboard")
 }
+
+export async function getSettingsAction() {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from("settings").select("*").single()
+  if (error && error.code !== 'PGRST116') throw new Error(error.message)
+  return data || { announcement_text: "", announcement_visible: true, announcement_color: "#000000" }
+}
+
+export async function updateSettingsAction(settings: any) {
+  const supabase = await createClient()
+  const { error } = await supabase.from("settings").upsert({ id: 1, ...settings })
+  if (error) throw new Error(error.message)
+  revalidatePath("/")
+}
+
+export async function getCouponsAction() {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from("coupons").select("*")
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function upsertCouponAction(coupon: any) {
+  const supabase = await createClient()
+  const { error } = await supabase.from("coupons").upsert(coupon)
+  if (error) throw new Error(error.message)
+  revalidatePath("/")
+}
