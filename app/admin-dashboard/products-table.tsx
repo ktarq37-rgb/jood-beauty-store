@@ -71,6 +71,10 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
 
   const categories = ["عناية بالبشرة", "عناية بالجسم", "عناية بالشعر", "عناية شخصية"]
 
+  const filteredProducts = products.filter(p => 
+    p.name_ar?.includes(searchTerm) || p.name_en?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
