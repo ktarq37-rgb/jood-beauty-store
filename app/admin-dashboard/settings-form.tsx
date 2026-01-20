@@ -43,8 +43,8 @@ export default function SettingsForm({ initialSettings }: { initialSettings: any
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">إظهار الشريط</label>
           <Switch 
-            checked={settings.announcement_visible} 
-            onCheckedChange={checked => setSettings({...settings, announcement_visible: checked})}
+            checked={settings.show_announcement} 
+            onCheckedChange={checked => setSettings({...settings, show_announcement: checked})}
           />
         </div>
         <Button type="submit" className="w-full">حفظ التغييرات</Button>

@@ -21,7 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
-import { Edit2, Trash2, Plus, Search, Upload, Link as LinkIcon } from "lucide-react"
+import { Edit2, Trash2, Plus, Search, Upload, Link as LinkIcon, Loader2 } from "lucide-react"
 
 export default function ProductsTable({ initialProducts }: { initialProducts: any[] }) {
   const [products, setProducts] = useState(initialProducts)
@@ -69,9 +69,7 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
     }
   }
 
-  const filteredProducts = products.filter(p => 
-    p.name_ar?.includes(searchTerm) || p.name_en?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const categories = ["عناية بالبشرة", "عناية بالجسم", "عناية بالشعر", "عناية شخصية"]
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -118,11 +116,11 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
               إضافة منتج جديد
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
             <DialogHeader>
-              <DialogTitle>{editingProduct ? 'تعديل منتج' : 'إضافة منتج جديد'}</DialogTitle>
+              <DialogTitle className="text-right">{editingProduct ? 'تعديل منتج' : 'إضافة منتج جديد'}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 py-4">
+            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 py-4 text-right">
               <input type="hidden" name="id" value={editingProduct?.id || ''} />
               <div className="space-y-2">
                 <label className="text-sm font-medium">الاسم (عربي)</label>
@@ -136,22 +134,36 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
                 <label className="text-sm font-medium">الوصف (عربي)</label>
                 <Input name="description_ar" defaultValue={editingProduct?.description_ar} />
               </div>
-              <div className="space-y-2 col-span-2">
-                <label className="text-sm font-medium">السعر (د.ع)</label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">السعر (SDG)</label>
                 <Input type="number" name="price" defaultValue={editingProduct?.price} required />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">الفئة (Category)</label>
-                <Input name="category" defaultValue={editingProduct?.category} required />
+                <label className="text-sm font-medium">السعر الأصلي (اختياري)</label>
+                <Input type="number" name="original_price" defaultValue={editingProduct?.original_price} />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">العلامة التجارية (Brand)</label>
-                <Input name="brand" defaultValue={editingProduct?.brand} required />
+                <label className="text-sm font-medium">الفئة</label>
+                <select 
+                  name="category" 
+                  className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  defaultValue={editingProduct?.category}
+                  required
+                >
+                  <option value="">اختر الفئة</option>
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">العلامة التجارية</label>
+                <Input name="brand" defaultValue={editingProduct?.brand} />
               </div>
               <div className="space-y-2 col-span-2">
                 <label className="text-sm font-medium">الصورة</label>
                 <div className="flex gap-2">
-                  <Input name="image" defaultValue={editingProduct?.image} placeholder="رابط الصورة" required />
+                  <Input name="image" defaultValue={editingProduct?.image} placeholder="رابط الصورة" />
                   <div className="relative">
                     <input
                       type="file"
@@ -166,12 +178,14 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploading}
                     >
-                      {uploading ? "جاري الرفع..." : <Upload className="h-4 w-4" />}
+                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                     </Button>
                   </div>
                 </div>
               </div>
-              <Button type="submit" className="col-span-2 mt-4">حفظ المنتج</Button>
+              <Button type="submit" className="col-span-2 mt-4 py-6 text-lg font-bold">
+                {editingProduct ? "تحديث المنتج" : "إضافة المنتج"}
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -179,11 +193,11 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
 
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead>المنتج</TableHead>
-              <TableHead>الفئة</TableHead>
-              <TableHead>السعر</TableHead>
+              <TableHead className="text-right">المنتج</TableHead>
+              <TableHead className="text-right">الفئة</TableHead>
+              <TableHead className="text-right">السعر</TableHead>
               <TableHead className="text-left">الإجراءات</TableHead>
             </TableRow>
           </TableHeader>
@@ -191,16 +205,20 @@ export default function ProductsTable({ initialProducts }: { initialProducts: an
             {filteredProducts.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>
-                  <div className="flex items-center gap-3">
-                    <img src={product.image} className="w-10 h-10 rounded-md object-cover border" alt="" />
-                    <div className="flex flex-col">
+                  <div className="flex items-center gap-3 justify-end">
+                    <div className="flex flex-col text-right">
                       <span className="font-medium text-sm">{product.name_ar}</span>
                       <span className="text-xs text-muted-foreground">{product.name_en}</span>
                     </div>
+                    <img src={product.image} className="w-12 h-12 rounded-md object-cover border" alt="" />
                   </div>
                 </TableCell>
-                <TableCell className="text-sm">{product.category}</TableCell>
-                <TableCell className="text-sm font-mono">{product.price?.toLocaleString()} د.ع</TableCell>
+                <TableCell className="text-right text-sm">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    {product.category}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right text-sm font-bold">{product.price?.toLocaleString()} SDG</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Button 

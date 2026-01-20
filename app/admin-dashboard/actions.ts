@@ -67,12 +67,16 @@ export async function getSettingsAction() {
   const supabase = await createClient()
   const { data, error } = await supabase.from("settings").select("*").single()
   if (error && error.code !== 'PGRST116') throw new Error(error.message)
-  return data || { announcement_text: "", announcement_visible: true, announcement_color: "#000000" }
+  return data || { announcement_text: "تخفيضات بمناسبة الافتتاح", show_announcement: true }
 }
 
 export async function updateSettingsAction(settings: any) {
   const supabase = await createClient()
-  const { error } = await supabase.from("settings").upsert({ id: 1, ...settings })
+  const { data: existing } = await supabase.from("settings").select("id").single()
+  const { error } = await supabase.from("settings").upsert({ 
+    id: existing?.id || undefined, 
+    ...settings 
+  })
   if (error) throw new Error(error.message)
   revalidatePath("/")
 }
@@ -86,7 +90,20 @@ export async function getCouponsAction() {
 
 export async function upsertCouponAction(coupon: any) {
   const supabase = await createClient()
-  const { error } = await supabase.from("coupons").upsert(coupon)
+  // Ensure we map the frontend 'discount' to DB 'discount_percent'
+  const dbCoupon = {
+    code: coupon.code,
+    discount_percent: coupon.discount,
+    is_active: true
+  }
+  const { error } = await supabase.from("coupons").upsert(dbCoupon, { onConflict: 'code' })
+  if (error) throw new Error(error.message)
+  revalidatePath("/")
+}
+
+export async function deleteCouponAction(id: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.from("coupons").delete().eq("id", id)
   if (error) throw new Error(error.message)
   revalidatePath("/")
 }

@@ -28,7 +28,7 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-gray-50/50" dir="rtl">
       <div className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -43,18 +43,18 @@ export default async function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="products" className="flex items-center gap-2">
+          <TabsList className="bg-white border p-1 h-auto grid grid-cols-3 gap-2 max-w-md">
+            <TabsTrigger value="products" className="data-[state=active]:bg-primary data-[state=active]:text-white py-2 flex items-center gap-2">
               <Package className="w-4 h-4" />
               المنتجات
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              الإعدادات
-            </TabsTrigger>
-            <TabsTrigger value="coupons" className="flex items-center gap-2">
+            <TabsTrigger value="coupons" className="data-[state=active]:bg-primary data-[state=active]:text-white py-2 flex items-center gap-2">
               <Ticket className="w-4 h-4" />
               الكوبونات
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-white py-2 flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              الإعدادات
             </TabsTrigger>
           </TabsList>
 
@@ -62,12 +62,12 @@ export default async function AdminDashboard() {
             <ProductsTable initialProducts={products} />
           </TabsContent>
 
-          <TabsContent value="settings">
-            <SettingsForm initialSettings={settings} />
-          </TabsContent>
-
           <TabsContent value="coupons">
             <CouponsManager initialCoupons={coupons} />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SettingsForm initialSettings={settings} />
           </TabsContent>
         </Tabs>
       </main>
