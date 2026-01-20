@@ -126,3 +126,65 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Micro-interactions and smooth animations */
+@layer utilities {
+  /* Button smooth transitions */
+  .btn-smooth {
+    @apply transition-all duration-200 ease-out active:scale-95;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply hover:shadow-lg hover:translate-y-[-2px] transition-all duration-300;
+  }
+
+  /* Product card glow on hover */
+  .product-card-glow {
+    @apply hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] transition-shadow duration-300;
+  }
+
+  /* Smooth fade in animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  /* Smooth bounce for cart items */
+  @keyframes cartBounce {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .cart-bounce {
+    animation: cartBounce 0.3s ease-in-out;
+  }
+
+  /* Image quality enhancement */
+  .img-smooth {
+    @apply object-cover object-center;
+    image-rendering: crisp-edges;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* High contrast text */
+  .text-premium {
+    @apply font-semibold tracking-tight;
+    text-rendering: optimizeLegibility;
+  }
+}

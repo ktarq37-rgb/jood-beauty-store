@@ -15,10 +15,6 @@ interface CartContextType {
   clearCart: () => void
   totalItems: number
   totalPrice: number
-  subtotal: number
-  appliedCoupon: { code: string; discount: number } | null
-  applyCoupon: (code: string, discount: number) => void
-  removeCoupon: () => void
   isCartOpen: boolean
   setIsCartOpen: (open: boolean) => void
 }
@@ -27,16 +23,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null)
   const [isCartOpen, setIsCartOpen] = useState(false)
-
-  const applyCoupon = (code: string, discount: number) => {
-    setAppliedCoupon({ code, discount })
-  }
-
-  const removeCoupon = () => {
-    setAppliedCoupon(null)
-  }
 
   const addToCart = (product: Product) => {
     setItems((prev) => {
@@ -61,15 +48,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.map((item) => (item.id === productId ? { ...item, quantity } : item)))
   }
 
-  const clearCart = () => {
-    setItems([])
-    setAppliedCoupon(null)
-  }
+  const clearCart = () => setItems([])
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount) / 100 : 0
-  const totalPrice = subtotal - discountAmount
+  const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   return (
     <CartContext.Provider
@@ -81,10 +63,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
-        subtotal,
-        appliedCoupon,
-        applyCoupon,
-        removeCoupon,
         isCartOpen,
         setIsCartOpen,
       }}

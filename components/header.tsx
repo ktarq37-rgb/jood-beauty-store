@@ -15,14 +15,14 @@ export function Header() {
   const { language, t } = useLanguage()
 
   return (
-    <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border">
+    <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border transition-all duration-300">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden btn-smooth"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -48,14 +48,14 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+            <Link href="/" className="text-foreground hover:text-primary transition-colors duration-200 font-medium hover-lift">
               {t("home")}
             </Link>
             {categories.map((category) => (
               <Link
                 key={category.id}
                 href={`#${category.id}`}
-                className="text-foreground hover:text-primary transition-colors font-medium"
+                className="text-foreground hover:text-primary transition-colors duration-200 font-medium hover-lift"
               >
                 {language === "ar" ? category.nameAr : category.nameEn}
               </Link>
@@ -65,18 +65,18 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            <Button variant="ghost" size="icon" className="hidden md:flex">
+            <Button variant="ghost" size="icon" className="hidden md:flex btn-smooth">
               <Search className="h-5 w-5" />
             </Button>
-            <Link href="/admin-dashboard" prefetch={false}>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+            <Link href="/admin" title="لوحة التحكم">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary btn-smooth">
                 <Lock className="h-5 w-5" />
               </Button>
             </Link>
-            <Button variant="ghost" size="icon" className="relative" onClick={() => setIsCartOpen(true)}>
+            <Button variant="ghost" size="icon" className="relative btn-smooth" onClick={() => setIsCartOpen(true)}>
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold cart-bounce">
                   {totalItems}
                 </span>
               )}
@@ -86,11 +86,11 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-border">
+          <nav className="md:hidden py-4 border-t border-border animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-4">
               <Link
                 href="/"
-                className="text-foreground hover:text-primary transition-colors font-medium py-2"
+                className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2 hover-lift"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {t("home")}
@@ -99,15 +99,15 @@ export function Header() {
                 <Link
                   key={category.id}
                   href={`#${category.id}`}
-                  className="text-foreground hover:text-primary transition-colors font-medium py-2"
+                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2 hover-lift"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {language === "ar" ? category.nameAr : category.nameEn}
                 </Link>
               ))}
               <Link
-                href="/admin-dashboard"
-                className="text-foreground hover:text-primary transition-colors font-medium py-2 flex items-center gap-2"
+                href="/admin"
+                className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2 flex items-center gap-2 hover-lift"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Lock className="h-4 w-4" />

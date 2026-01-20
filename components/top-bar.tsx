@@ -2,25 +2,33 @@
 
 import { Sparkles } from "lucide-react"
 import { useState, useEffect } from "react"
-import { getSettingsAction } from "@/app/admin-dashboard/actions"
 
 export function TopBar() {
   const [announcementText, setAnnouncementText] = useState("تخفيضات كبرى بمناسبة الافتتاح - متوفر الدفع عبر تطبيق بنكك")
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
-    async function fetchSettings() {
-      try {
-        const settings = await getSettingsAction()
-        if (settings) {
-          setAnnouncementText(settings.announcement_text)
-          setIsVisible(settings.show_announcement)
-        }
-      } catch (error) {
-        console.error("Failed to fetch settings:", error)
+    if (typeof window !== "undefined") {
+      const savedText = localStorage.getItem("jood_announcement_text")
+      const savedVisibility = localStorage.getItem("jood_announcement_visible")
+
+      if (savedText) {
+        setAnnouncementText(savedText)
       }
+      if (savedVisibility !== null) {
+        setIsVisible(savedVisibility === "true")
+      }
+
+      const handleUpdate = () => {
+        const text = localStorage.getItem("jood_announcement_text")
+        const visible = localStorage.getItem("jood_announcement_visible")
+        if (text) setAnnouncementText(text)
+        if (visible !== null) setIsVisible(visible === "true")
+      }
+
+      window.addEventListener("announcementUpdated", handleUpdate)
+      return () => window.removeEventListener("announcementUpdated", handleUpdate)
     }
-    fetchSettings()
   }, [])
 
   if (!isVisible) return null

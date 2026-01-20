@@ -37,7 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <div className="group bg-card rounded-xl overflow-hidden border-2 border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300">
+      <div className="group bg-card rounded-xl overflow-hidden border-2 border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300 product-card-glow hover-lift">
         {/* Image Section */}
         <div
           className="relative aspect-square overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100 cursor-pointer"
@@ -46,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <img
             src={product.image || "/placeholder.svg"}
             alt={productName}
-            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500 ease-out img-smooth"
           />
 
           {product.isOnSale && discountPercent > 0 && (
@@ -88,7 +88,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <Button
               onClick={handleAddToCart}
               size="sm"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground text-[11px] px-3 py-1 h-8 rounded-full gap-1"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-[11px] px-3 py-1 h-8 rounded-full gap-1 btn-smooth active:scale-95"
             >
               <ShoppingBag className="h-3 w-3" />
               {language === "ar" ? "أضيفي" : "Add"}
