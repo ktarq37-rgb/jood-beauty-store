@@ -136,12 +136,20 @@
 
   /* Hover lift effect */
   .hover-lift {
-    @apply hover:shadow-lg hover:translate-y-[-2px] transition-all duration-300;
+    @apply transition-all duration-300;
+  }
+
+  .hover-lift:hover {
+    @apply shadow-lg -translate-y-[2px];
   }
 
   /* Product card glow on hover */
   .product-card-glow {
-    @apply hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] transition-shadow duration-300;
+    @apply transition-shadow duration-300;
+  }
+
+  .product-card-glow:hover {
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.15);
   }
 
   /* Smooth fade in animation */
