@@ -4,15 +4,28 @@ import SettingsForm from "./settings-form"
 import CouponsManager from "./coupons-manager"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Package, Plus, LayoutDashboard, Settings, Ticket } from "lucide-react"
+import { Package, LayoutDashboard, Settings, Ticket } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export const dynamic = "force-dynamic"
 
 export default async function AdminDashboard() {
-  const products = await getProductsAction()
-  const settings = await getSettingsAction()
-  const coupons = await getCouponsAction()
+  let products: any[] = []
+  let settings = { announcement_text: "", announcement_visible: true, announcement_color: "#000000" }
+  let coupons: any[] = []
+
+  try {
+    const [productsRes, settingsRes, couponsRes] = await Promise.all([
+      getProductsAction(),
+      getSettingsAction(),
+      getCouponsAction()
+    ])
+    products = productsRes || []
+    settings = settingsRes || settings
+    coupons = couponsRes || []
+  } catch (error) {
+    console.error("Error loading admin data:", error)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50/50">
