@@ -3,8 +3,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 
-export const dynamic = "force-dynamic"
-
 export async function getProductsAction() {
   const supabase = await createClient()
   const { data, error } = await supabase
