@@ -68,7 +68,7 @@ export function Header() {
             <Button variant="ghost" size="icon" className="hidden md:flex">
               <Search className="h-5 w-5" />
             </Button>
-            <Link href="/admin-dashboard" title="لوحة التحكم">
+            <Link href="/admin-dashboard" prefetch={false}>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
                 <Lock className="h-5 w-5" />
               </Button>

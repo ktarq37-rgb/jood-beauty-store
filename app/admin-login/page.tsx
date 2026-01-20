@@ -15,9 +15,13 @@ export default function AdminLoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (username === "JOOD" && password === "tyfgaszxM2") {
+      // Set cookie with specific options
       document.cookie = "admin_session=authenticated; path=/; max-age=3600; samesite=lax";
+      
       toast.success("تم تسجيل الدخول بنجاح");
-      router.push("/admin-dashboard");
+      
+      // Use window.location.href for a hard redirect to ensure middleware picks up the new cookie
+      window.location.href = "/admin-dashboard";
     } else {
       toast.error("بيانات الدخول غير صحيحة");
     }
